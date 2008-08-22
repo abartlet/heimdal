@@ -679,6 +679,15 @@ _krb5_extract_ticket(krb5_context context,
 	goto out;
     }
 
+    /*
+     * HACK:
+     * this is really a ugly hack, to support using the Netbios Domain Name
+     * as realm against windows KDC's, they always return the full realm
+     * based on the DNS Name.
+     */
+    flags |= EXTRACT_TICKET_ALLOW_SERVER_MISMATCH;
+    flags |= EXTRACT_TICKET_ALLOW_CNAME_MISMATCH;
+
     /* compare client and save */
     ret = _krb5_principalname2krb5_principal(context,
 					     &tmp_principal,
