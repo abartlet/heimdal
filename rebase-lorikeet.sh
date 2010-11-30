@@ -19,8 +19,8 @@ old_lorikeet_branch=$1
 
 DATE=`date --utc +%Y%m%d%H%M`
 
-heimdal_my_wip_name="heimdal-my-wip"
-heimdal_my_wip_url="git://git.samba.org/metze/heimdal/wip.git"
+heimdal_my_wip_name="heimdal-local"
+heimdal_my_wip_url="/data/heimdal"
 
 if test x"$old_lorikeet_branch" = x""; then
 	old_lorikeet_branch="heimdal-metze-wip/lorikeet-heimdal"
@@ -40,8 +40,9 @@ heimdal_init() {
 		mkdir heimdal || bailout $?
 		pushd heimdal
 		git init || bailout $?
-		git remote add heimdal-svnmirror git://git.samba.org/metze/heimdal/svnmirror.git
-		git remote add heimdal-metze-wip git://git.samba.org/metze/heimdal/wip.git
+		git remote add heimdal-git git://github.com/heimdal/heimdal.git
+		git remote add lorikeet-heimdal-abartlet ssh://git.samba.org/data/git/abartlet/lorikeet-heimdal.git/.git
+		git remote add lorikeet-heimdal ssh://git.samba.org/lorikeet-heimdal.git
 		git remote add ${heimdal_my_wip_name} ${heimdal_my_wip_url}
 		popd
 	}
@@ -53,8 +54,8 @@ heimdal_init() {
 heimdal_fetch() {
 	test x"$skip_fetch" = x"yes" || {
 		pushd heimdal
-		git fetch heimdal-svnmirror || bailout $?
-		git fetch heimdal-metze-wip || bailout $?
+		git fetch heimdal-git || bailout $?
+		git fetch lorikeet-heimdal-abartlet || bailout $?
 		git fetch ${heimdal_my_wip_name} || bailout $?
 		popd
 	}
@@ -73,7 +74,7 @@ heimdal_rebase() {
 		echo "git reset --hard HEAD"
 		git reset --hard HEAD
 		echo "git rebase"
-		git rebase heimdal-svnmirror/trunk || {
+		git rebase heimdal-git/master || {
 			echo "PS1=\"'git-rebase shell'>\"" > ../.bashrc.heimdal_rebase
 			bash --rcfile ../.bashrc.heimdal_rebase || {
 				ret=$?
