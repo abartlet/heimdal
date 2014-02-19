@@ -1,12 +1,12 @@
 #!/bin/bash
 
-[ $# == 1 ] || {
+[ $# == 2 ] || {
     echo "Usage: apply_heimdal.sh <lorikeet_path>"
     exit 1
 }
 
 LORIKEET_PATH="$1"
-
+IMPORT_HASH="$2"
 S4PATH="$PWD"
 
 pushd $LORIKEET_PATH || exit 1
@@ -34,7 +34,7 @@ try_patch() {
     popd || exit 1
 }
 
-commits="$(git log --pretty=oneline --reverse --since='1 months ago' heimdal | cut -d' ' -f1)"
+commits="$(git log --pretty=oneline --reverse $IMPORT_HASH..origin/master heimdal | cut -d' ' -f1)"
 for c in $commits; do
     git log $c -1
     echo -n "Try apply? [Y/n] "
