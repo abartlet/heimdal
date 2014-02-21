@@ -34,7 +34,7 @@ try_patch() {
     popd || exit 1
 }
 
-commits="$(git log --pretty=oneline --reverse $IMPORT_HASH..origin/master heimdal | cut -d' ' -f1)"
+commits="$(git log --pretty=oneline --reverse $IMPORT_HASH..HEAD -- source4/heimdal | cut -d' ' -f1)"
 for c in $commits; do
     git log $c -1
     echo -n "Try apply? [Y/n] "
