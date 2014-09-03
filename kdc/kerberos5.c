@@ -438,6 +438,13 @@ pa_enc_chal_validate(kdc_request_t r, const PA_DATA *pa)
 	return ret;
     }
 
+    if (r->client->entry.flags.locked_out) {
+	ret = KRB5KDC_ERR_CLIENT_REVOKED;
+	kdc_log(r->context, r->config, 0,
+		"Client (%s) is locked out", r->client_name);
+	return ret;
+    }
+
     ret = decode_EncryptedData(pa->padata_value.data,
 			       pa->padata_value.length,
 			       &enc_data,
@@ -559,6 +566,13 @@ pa_enc_ts_validate(kdc_request_t r, const PA_DATA *pa)
 	ret = KRB5KRB_AP_ERR_BAD_INTEGRITY;
 	_kdc_set_e_text(r, "ENC-TS doesn't support anon");
 	goto out;
+    }
+
+    if (r->client->entry.flags.locked_out) {
+	ret = KRB5KDC_ERR_CLIENT_REVOKED;
+	kdc_log(r->context, r->config, 0,
+		"Client (%s) is locked out", r->client_name);
+	return ret;
     }
 
     ret = decode_EncryptedData(pa->padata_value.data,
